@@ -9,7 +9,9 @@ const server = http.createServer(async(request, response) => {
   }
   else{
    try{
-    const fileHandle = await open(`./storage${decodeURIComponent(request.url) }`)
+    const [url, queryString] = request.url.split("?")
+    console.log({url, queryString})
+    const fileHandle = await open(`./storage${decodeURIComponent(url) }`)
     const stat = await fileHandle.stat()
     if(stat.isDirectory()){
       servDirectory(request, response)
@@ -29,10 +31,12 @@ const server = http.createServer(async(request, response) => {
 })
 
 async function servDirectory(request, response) {
-  const fileHandle = await open(`./storage${decodeURIComponent(request.url) }`)
+  const [url, queryString] = request.url.split("?")
+    console.log({url, queryString})
+  const fileHandle = await open(`./storage${decodeURIComponent(url) }`)
     const stat = await fileHandle.stat()
     if(stat.isDirectory()){
-      const itemList =  await readdir(`./storage/${request.url}`)
+      const itemList =  await readdir(`./storage${request.url}`)
       console.log("Files in storage:", itemList) 
       let dynamicHTML = ""
       itemList.forEach((item) => {
